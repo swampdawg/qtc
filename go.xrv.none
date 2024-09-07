@@ -1,0 +1,529 @@
+#!/bin/bash
+
+NAM=`basename "$0"`
+CWD=`pwd`
+GOSUB="/usr/local/sd/syschk/lib"
+
+. "$GOSUB""/f_go"
+. "$GOSUB""/f_tmpdir"
+
+case `f_go_os_arch` in
+        32)
+	F_GO_TMPFS="6G,nr_inodes=256k"
+        ;;
+
+        *)
+        F_GO_TMPFS=8G
+        ;;
+esac
+
+
+: ${BU_PKG:="binutils"}
+: ${BU_VER:="2.43"}
+
+: ${GC_PKG:="gcc"}
+: ${GC_VER:="14.2.0"}
+
+: ${NL_PKG:="newlib"}
+: ${NL_VER:="4.4.0.20231231"}
+
+TGT_NAM="riscv32"
+PFX=
+CFG=
+
+REQ="$CWD/gc/REQ"
+: ${NPROC:="-j"`f_go_bproc`}
+: ${D_RPI:="${D_QT}/xgcc"}
+
+case "$TGT_NAM" in
+	riscv32)
+	TGT_ARCH="riscv32"
+	TGT="${TGT_ARCH}-unknown-elf"
+	;;
+
+	riscv64)
+	TGT_ARCH="riscv64"
+	TGT="${TGT_ARCH}-unknown-elf"
+	;;
+
+	*)
+	echo "$NAM: TGT_NAM?" 1>&2
+	exit 1
+	;;
+esac
+
+BU_CFG="
+--target=${TGT}
+--with-gnu-as
+--with-gnu-ld
+--disable-nls
+--enable-plugins
+--disable-werror
+--with-expat=yes
+--disable-gdb
+--disable-sim
+--disable-libdecnumber
+--disable-readline
+--with-isa-spec=20191213
+"
+
+BU_32_CFG="
+"
+
+BU_64_CFG="
+"
+
+#--src=../../riscv-gnu-toolchain/gcc
+#CFLAGS_FOR_TARGET=-Os -mcmodel=medlow CXXFLAGS_FOR_TARGET=-Os -mcmodel=medlow
+GC_CFG="
+--enable-languages=c,c++
+--target=${TGT}
+--with-gnu-as
+--with-gnu-ld
+--disable-shared
+--disable-threads
+--with-system-zlib
+--with-newlib
+--disable-libmudflap
+--disable-libssp
+--disable-libquadmath
+--disable-libgomp
+--disable-nls
+--disable-tm-clone-registry
+--enable-multilib
+--with-tune=rocket
+--with-isa-spec=20191213
+--with-sysroot=${D_RPI}/${TGT}
+"
+
+GC_MAK00_CFG="
+--disable-tls
+"
+
+#--with-pkgversion=gc891d8dc23e-dirty
+#--with-native-system-header-dir=/include
+GC_MAK02_CFG="
+--enable-tls
+"
+
+GC_32_CFG="
+--with-multilib-generator=rv32ima_zicsr_zifencei_zba_zbb_zbs_zbkb_zca_zcb-ilp32--;rv32imac_zicsr_zifencei_zba_zbb_zbs_zbkb-ilp32--
+--with-abi=ilp32
+--with-arch=rv32ima_zicsr_zifencei_zba_zbb_zbs_zbkb_zca_zcb
+"
+
+GC_64_CFG="
+--with-multilib-generator=rv64ima_zicsr_zifencei_zba_zbb_zbs_zbkb_zca_zcb-ilp64--;rv64imac_zicsr_zifencei_zba_zbb_zbs_zbkb-ilp64--
+--with-abi=ilp64
+--with-arch=rv64ima_zicsr_zifencei_zba_zbb_zbs_zbkb_zca_zcb
+"
+
+#--enable-newlib-reent-small
+#--disable-newlib-fvwrite-in-streamio
+#--disable-newlib-fseek-optimization
+#--disable-newlib-wide-orient
+#--enable-newlib-nano-malloc
+#--disable-newlib-unbuf-stream-opt
+#--enable-lite-exit
+#--enable-newlib-global-atexit
+#--enable-newlib-nano-formatted-io
+#--disable-newlib-supplied-syscalls
+NL_CFG="
+-target=${TGT}
+--enable-newlib-io-long-double
+--enable-newlib-io-long-long
+--enable-newlib-io-c99-formats
+--enable-newlib-register-fini
+--disable-nls
+"
+
+case "$TGT_NAM" in
+	riscv32)
+BU_CFG="
+${BU_CFG}
+${BU_32_CFG}
+"
+GC_CFG="
+${GC_CFG}
+${GC_32_CFG}
+"
+	;;
+
+	riscv64)
+BU_CFG="
+${BU_CFG}
+${BU_64_CFG}
+"
+GC_CFG="
+${GC_CFG}
+${GC_64_CFG}
+"
+	;;
+
+	*)
+	;;
+esac
+
+fcp_init ()
+{
+ unset INS SRC GEN OBJ PFX
+ f_go_init
+}
+
+fcp_arc ()
+{
+ [ -d "$SRC" ] && return 0
+ f_go_arc "$@"
+}
+
+fcp_gen ()
+{
+ f_go_gen
+}
+
+fcp_cfg ()
+{
+ f_go_cfg "$@"
+}
+
+fcp_mak ()
+{
+ f_go_mak "$@"
+}
+
+fcp_ins ()
+{
+ f_go_ins "$@"
+}
+
+fcp_rem ()
+{
+ f_go_rem "$@"
+}
+
+fcp_del ()
+{
+ f_go_del "$@"
+}
+
+fcp_nl_main ()
+{
+ PKG="$NL_PKG"
+ VER="$NL_VER"
+ fcp_init
+ PFX="$D_RPI""/""$TGT"
+CFG="
+${NL_CFG}
+"
+
+ p="$PFX"
+ PATH="$p""/bin:""$PATH"
+ LD_LIBRARY_PATH="$p""/lib64:""$p""/lib32:""$p""/lib"
+ export PATH LD_LIBRARY_PATH
+ gcc -v >/dev/null 2>&1
+ [ $? -eq 127 ] && {
+        echo "$NAM: No Compiler!" 1>&2
+        echo "$PATH" 1>&2
+        echo "$LD_LIBRARY_PATH" 1>&2
+        exit 1
+ }
+
+ case "$1" in
+	here)
+	f_go_here
+	exit 0
+	;;
+
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_cfg "$@"
+	;;
+
+	mak)
+	shift
+	fcp_mak $NPROC "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_cfg || exit 1
+	fcp_mak $NPROC || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_bu_main ()
+{
+ PKG="$BU_PKG"
+ VER="$BU_VER"
+ fcp_init
+ PFX="$D_RPI""/""$TGT"
+CFG="
+${BU_CFG}
+"
+ case "$1" in
+	here)
+	f_go_here
+	exit 0
+	;;
+
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_cfg "$@"
+	;;
+
+	mak)
+	shift
+	fcp_mak $NPROC "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_cfg || exit 1
+	fcp_mak $NPROC || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_gc_arc ()
+{
+ f_go_arc "$@"
+
+ case "$1" in
+	-d)
+#	f_go_gcc_req
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_gc_cfg ()
+{
+
+ f_go_cfg "$@"
+}
+
+fcp_gc_del ()
+{
+# f_go_gcc_req_del "$1"
+ case "$1" in
+        all)
+        fcp_gc_del obj
+        fcp_gc_del src
+        ;;
+
+        *)
+        ;;
+ esac
+ f_go_del "$@"
+}
+
+fcp_gc_main ()
+{
+ local	p
+
+ PKG="$GC_PKG"
+ VER="$GC_VER"
+ fcp_init
+ PFX="$D_RPI""/""$TGT"
+CFG="
+${GC_CFG}
+"
+
+ p="$PFX"
+ PATH="$p""/bin:""$PATH"
+ LD_LIBRARY_PATH="$p""/lib64:""$p""/lib32:""$p""/lib"
+ export PATH LD_LIBRARY_PATH
+ gcc -v >/dev/null 2>&1
+ [ $? -eq 127 ] && {
+        echo "$NAM: No Compiler!" 1>&2
+        echo "$PATH" 1>&2
+        echo "$LD_LIBRARY_PATH" 1>&2
+        exit 1
+ }
+
+ case "$1" in
+	arc)
+	shift
+	fcp_gc_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_gc_cfg "$@"
+	;;
+
+	mak00)
+	shift
+	fcp_mak "$@" all-gcc || exit 1
+	fcp_mak install-gcc
+	;;
+
+	mak01)
+	shift
+	fcp_mak "$@" all-target-libgcc || exit 1
+	fcp_mak install-target-libgcc
+	;;
+
+	mak02)
+	shift
+	fcp_mak "$@" || exit 1
+	fcp_mak install
+	;;
+
+	del)
+	shift
+	fcp_gc_del "$@"
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_all ()
+{
+ rm -rf "$D_RPI""/""$TGT"
+ fcp_bu_main all || exit 1
+ fcp_gc_main arc -d || exit 1
+ fcp_gc_main cfg $GC_MAK00_CFG || exit 1
+ fcp_gc_main mak00 $NPROC || exit 1
+ fcp_nl_main all || exit 1
+ fcp_gc_main del obj
+ fcp_gc_main cfg $GC_MAK02_CFG || exit 1
+ fcp_gc_main mak02 $NPROC || exit 1
+
+ mkdir -p BIN || exit 1
+# tar -C / -cvjf "BIN/""$TGT""(""$GC_PKG""-""$GC_VER"").tar.bz2" "$D_RPI""/""$TGT"
+ fcp_gc_main del all
+}
+
+fcp_del_all ()
+{
+ fcp_nl_main "$@"
+ fcp_bu_main "$@"
+ fcp_gc_main "$@"
+}
+
+fcp_bld ()
+{
+ local	p="$D_RPI""/""$TGT"
+ f_tmpdir_add
+ local	d=`f_tmpdir_top`
+
+cat<<EOF > "$d""/c.c"
+#include <stdio.h>
+#include <stdlib.h>
+int main(){
+printf("Hello C World\n");
+return EXIT_SUCCESS;
+}
+EOF
+cat<<EOF > "$d""/c.cc"
+#include <iostream>
+#include <cstdlib>
+int main(){
+std::cout<<"Hello C++ World"<<std::endl;
+return EXIT_SUCCESS;
+}
+EOF
+ (
+ PATH="$p""/bin":"$PATH"
+ export PATH
+
+ ${TGT}-g++ -o "$d""/cc" "$d""/c.cc" || exit 1
+ file "$d""/cc"
+ readelf -h "$d""/cc"
+
+ ${TGT}-gcc -o "$d""/c" "$d""/c.c" || exit 1
+ file "$d""/cc"
+ readelf -h "$d""/c"
+
+ ) || exit 1
+ f_tmpdir_rem
+}
+
+fcp_main ()
+{
+ local	r=
+
+ f_go_time_b
+ case "$1" in
+	nl)
+	shift
+	fcp_nl_main "$@"
+	;;
+
+	bu)
+	shift
+	fcp_bu_main "$@"
+	;;
+
+	gc)
+	shift
+	fcp_gc_main "$@"
+	;;
+
+	all)
+	shift
+	fcp_all
+	;;
+
+	del)
+	fcp_del_all "$@"
+	;;
+
+	bld)
+	fcp_bld
+	;;
+
+	*)
+	;;
+ esac
+ f_go_time_e
+ f_go_time
+}
+
+fcp_main "$@"
