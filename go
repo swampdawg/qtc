@@ -983,7 +983,7 @@ fcp_qt_arc ()
 	-d)
 	fcp_arc "$@"
 	[ -d "$SRC""/qtbase/mkspecs/sd-linux-clang" ] || {
-		cp -Rv sd-linux-clang "$SRC""/qtbase/mkspecs/" || exit 1
+		cp -RHv sd-linux-clang "$SRC""/qtbase/mkspecs/" || exit 1
 	}
 	;;
 
