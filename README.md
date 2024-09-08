@@ -161,4 +161,42 @@ possible to return to..
 $ B_QT=/usr/local/QT/6500r ./go all-bootstrap
 #^^^only once this succeeds is it possible to remove /usr/local/QT/6500r/ and
 #^^^rely on /usr/local/qt/ alone.
+
+================================================================================
+			Footnotes
+================================================================================
+1) Linux version used is 64Gb mint 21.3 virginia with 1Gb paging.
+2) Raspberry Pi version used is 8Gb rpi5 aarch64 bookworm with 16Gb paging.
+   It was possible to use 8Gb rpi4 bullseye but expect an "all-bootstrap"
+   to take a week. Takes about 12hrs on author's PC. Approx 3days on rpi5.
+3) Most common cause of (seemingly) random build failures is gcc exhausting
+   memory, especially when linking collides. Most of the build strives to use
+   the clang compiler.
+4) It may be tempting to disable F_GO_TMPFS but just set up 16Gb of paging
+   before commencing. Your solid state device will thank you. At a push it is
+   possible to plug in a thumbdrive and use that as transient swap. Not a
+   recommended method because it can actually be quite hard to diagnose when a
+   thumbdrive fails - they go bad in wierd ways.
+5) Pico2 riscv compiler is untested. Author doesn't even have a pico2 atm!
+6) The usual workflow, when "all-bootstrap" works, is:
+   a) Use /usr/local/QT/*/ to build /usr/local/qt/
+   b) Destroy /usr/local/QT/*/ and use to B_QT=/usr/local/qt to start on next
+      version of /usr/local/QT/*/
+   c) When /usr/local/QT/*/ is verified, backup /usr/local/qt/, wipe it and
+      rebuild /usr/local/QT/*/ into /usr/local/qt/.
+   e) eg:
+      B_QT=/usr/local/QT/6500r D_QT=/usr/local/qt ./go trash-target
+      B_QT=/usr/local/QT/6500r D_QT=/usr/local/qt ./go all-bootstrap
+      (look in ./BIN/ and rename/archive that elsehere)
+      mkdir /usr/local/QT/6700r
+      (upgrade packages)
+      B_QT=/usr/local/qt D_QT=/usr/local/QT/6700r ./go trash-target
+      B_QT=/usr/local/qt D_QT=/usr/local/QT/6700r ./go all-bootstrap
+7) Installation folders are currently 18Gb each.
+8) The use of "tar -xvJf" to produce .xz is painfully painfully slow but it
+   does substantially reduce the size of the binary so we're going to live
+   with it.
+================================================================================
+			~~~2do
+1) Experiment with "install-strip".
 ================================================================================
