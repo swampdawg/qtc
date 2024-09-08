@@ -59,8 +59,8 @@ binutils:	2.43
 gcc:		14.2.0
 newlib:		4.4.0.20231231
 
-x86_64, linux mint 21.3:	[link]
-md5sum:				[value]
+x86_64, linux mint 21.3:	https://drive.google.com/file/d/1QoeAzVoPtGE-BVG_cgHjbqjlXPo0FLc4/view?usp=drive_link
+md5sum:				17128ea4d1cf9c40edc5b56dc3246926
 
 aarch64, rpi bookworm:		[link]
 md5sum:				[value]
@@ -199,4 +199,5 @@ $ B_QT=/usr/local/QT/6500r ./go all-bootstrap
 ================================================================================
 			~~~2do
 1) Experiment with "install-strip".
+2) Say something about PKG-VER.patch.???
 ================================================================================
