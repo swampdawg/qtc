@@ -1,6 +1,5 @@
 Script to build the above.
 
-<<<<<<< HEAD
 Requires:  
 https://github.com/swampdawg/go  
 https://github.com/swampdawg/qtc	\#(this repo)  
