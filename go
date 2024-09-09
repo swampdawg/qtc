@@ -1547,6 +1547,8 @@ fcp_all ()
 fcp_ldd ()
 {
  local	b
+ local	tb=$F_GO_TIME_B
+ local	te=$F_GO_TIME_E
 
  (
  cd ../QTP/sdldd || exit 1
@@ -1560,6 +1562,9 @@ fcp_ldd ()
   "$CBB"/sdldd --sp "$D_QT" > "$b"".ldd" 2>&1
   )
  ) || exit 1
+
+ F_GO_TIME_B=$tb
+ F_GO_TIME_E=$te
 }
 
 fcp_bootstrap ()
