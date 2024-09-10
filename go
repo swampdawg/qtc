@@ -175,19 +175,27 @@ DX_CFG="
 ${LV_LV_CFG}
 "
 
+#-skip qtwebengine
+#-make examples
+#-make tests
 QT_CFG="
 -release
--nomake examples
 -platform sd-linux-clang
 -no-pch
--qt-zlib -qt-libjpeg -qt-libpng -qt-pcre -qt-harfbuzz -qt-webp
+-qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -qt-webp
 -prefix ${D_QT}
 -opensource
 -confirm-license
 -icu -I ${D_QT}/include -L ${D_QT}/lib
+-install-examples-sources
 --
 -DCMAKE_ASM_FLAGS="-fno-integrated-as"
+-DQT_BUILD_EXAMPLES_BY_DEFAULT=OFF
+-DQT_BUILD_TESTS_BY_DEFAULT=OFF
+-DQT_BUILD_TOOLS_BY_DEFAULT=ON
+-DQT_INSTALL_EXAMPLES_SOURCES=ON
 "
+#-DQT_NO_MAKE_EXAMPLES=ON
 
 #QC_CFG="
 #CONFIG+=release
@@ -945,17 +953,17 @@ fcp_doxygen_main ()
 #~~~Can't for life of me find answer to why examples (code) will not install
 #~~~so we hack it in, probably with some junk but at least qtc [examples]
 #~~~box now populated.
-fcp_qt_examples ()
-{
- case "$1" in
-	install)
-	find "$SRC" -type d -name examples -exec cp -Rv '{}' "$PFX""/" ';'
-	;;
-
-	*)
-	;;
- esac
-}
+#fcp_qt_examples ()
+#{
+# case "$1" in
+#	install)
+#	find "$SRC" -type d -name examples -exec cp -Rv '{}' "$PFX""/" ';'
+#	;;
+#
+#	*)
+#	;;
+# esac
+#}
 
 fcp_qt_doc ()
 {
@@ -967,14 +975,14 @@ fcp_qt_doc ()
  [ ${PIPESTATUS[0]} -eq 0 ] || return 1
  ) || exit 1
 
- case "$1" in
-	install*)
-	fcp_qt_examples install
-	;;
-
-	*)
-	;;
- esac
+# case "$1" in
+#	install*)
+#	fcp_qt_examples install
+#	;;
+#
+#	*)
+#	;;
+# esac
 }
 
 fcp_qt_arc ()
@@ -1977,3 +1985,4 @@ exit $RETV
 # cmake --strip
 # try install-strip --strip-uneeded -v
 ##
+#less qt-6.7.2/qtdoc/doc/src/configure.qdoc
