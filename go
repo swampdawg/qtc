@@ -182,7 +182,7 @@ QT_CFG="
 -release
 -platform sd-linux-clang
 -no-pch
--qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -qt-webp
+-qt-zlib -qt-libjpeg -qt-libpng -system-freetype -qt-pcre -qt-harfbuzz -qt-webp
 -prefix ${D_QT}
 -opensource
 -confirm-license
@@ -952,18 +952,19 @@ fcp_doxygen_main ()
 
 #~~~Can't for life of me find answer to why examples (code) will not install
 #~~~so we hack it in, probably with some junk but at least qtc [examples]
-#~~~box now populated.
-#fcp_qt_examples ()
-#{
-# case "$1" in
-#	install)
-#	find "$SRC" -type d -name examples -exec cp -Rv '{}' "$PFX""/" ';'
-#	;;
-#
-#	*)
-#	;;
-# esac
-#}
+#~~~box now populated. Also may need to select */bin/qmake* if old settings
+#~~~are causing them to not appear.
+fcp_qt_examples ()
+{
+ case "$1" in
+	install)
+	find "$SRC" -type d -name examples -exec cp -Rv '{}' "$PFX""/" ';'
+	;;
+
+	*)
+	;;
+ esac
+}
 
 fcp_qt_doc ()
 {
@@ -975,14 +976,14 @@ fcp_qt_doc ()
  [ ${PIPESTATUS[0]} -eq 0 ] || return 1
  ) || exit 1
 
-# case "$1" in
-#	install*)
-#	fcp_qt_examples install
-#	;;
-#
-#	*)
-#	;;
-# esac
+ case "$1" in
+	install*)
+	fcp_qt_examples install
+	;;
+
+	*)
+	;;
+ esac
 }
 
 fcp_qt_arc ()
@@ -1566,8 +1567,8 @@ fcp_ldd ()
   VER="$QC_VER"
   b=`f_go_tar_tarname`
   b=$(echo "$b" | sed -e 's/-bin\.tar\..*//')
-  "$CBB"/sdldd --dev > "$b"".dev" 2>&1
-  "$CBB"/sdldd --sp "$D_QT" > "$b"".ldd" 2>&1
+  "$D_QT"/bin/sdldd --dev > "$b"".dev" 2>&1
+  "$D_QT"/bin/sdldd --sp "$D_QT" > "$b"".ldd" 2>&1
   )
  ) || exit 1
 
@@ -1682,7 +1683,7 @@ fcp_src ()
  f_tmp_add
  d=`f_tmp_top`
  f_tmp_add
- egrep "^:.*.._(PKG|VER):" go | awk -F'"' '{print $2}' > `f_tmp_top`
+ egrep "^:.*.._(PKG|VER):" "$NAM" | awk -F'"' '{print $2}' > `f_tmp_top`
  egrep "^:.*.._(PKG|VER):" go.x??.none | awk -F'"' '{print $2}' >> `f_tmp_top`
  while IFS= read -r p
  do
@@ -1705,6 +1706,38 @@ fcp_src ()
  tar uvhf "$t" sd-linux-clang || exit 1
 
  tar tvf "$t" > `dirname "$t"`"/$1"".txt"
+}
+
+#dev tar, take/restore quick snapshot
+fcp_dtar ()
+{
+ local	t="$2"".tar"
+
+ [ -z "$2" ] && {
+	echo "$NAM: fcp_dtar [ stem ]" 1>&2
+	exit 1
+ }
+
+ case "$1" in
+	-z)
+	tar cf "$t" "$D_QT""/" || {
+		echo "$NAM: -ERR" 1>&2
+		exit 1
+ 	}
+	;;
+
+	-d)
+	tar -C / -xf "$t" || {
+		echo "$NAM: -ERR" 1>&2
+		exit 1
+	}
+	;;
+
+	*)
+	exit 1
+	;;
+ esac
+ echo "$NAM: +OKI"
 }
 
 fcp_all_install ()
@@ -1967,6 +2000,11 @@ echo "Dependencies" >/tmp/"$NAM"
 	picotool)
 	shift
 	fcp_picotool_main "$@"
+	;;
+
+	dtar)
+	shift
+	fcp_dtar "$@"
 	;;
 
 	*)
