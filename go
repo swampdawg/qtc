@@ -993,6 +993,7 @@ fcp_qt_arc ()
 	fcp_arc "$@"
 	[ -d "$SRC""/qtbase/mkspecs/sd-linux-clang" ] || {
 		cp -RHv sd-linux-clang "$SRC""/qtbase/mkspecs/" || exit 1
+		sed -i -e "s,/SEDPATH,$D_QT,g" "$SRC""/qtbase/mkspecs/sd-linux-clang/qmake.conf"
 	}
 	;;
 
