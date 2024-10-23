@@ -65,7 +65,7 @@ fcp_rpi5_hack ()
  )
  case "$r" in
 	*Pi*5*)
-	echo "$1"",nr_inodes=350k"
+	echo "$1"",nr_inodes=450k"
 	;;
 
 	*)
