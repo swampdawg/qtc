@@ -211,6 +211,7 @@ QT_CFG="
 QC_CFG="
 -DCMAKE_INSTALL_PREFIX=${D_QT}
 ${LV_LV_CFG}
+-DBUILD_WITH_PCH=0
 "
 
 GC_CFG="
@@ -1093,7 +1094,7 @@ fcp_qtc_main ()
  export LLVM_INSTALL_DIR=${D_QT}
  export NINJAFLAGS="-v -j"`f_go_bproc`
  export QTC_ENABLE_CLANG_LIBTOOLING=1
- export Qt5_DIR=${D_QT}
+# export Qt5_DIR=${D_QT}
  export INSTALL_ROOT=${D_QT}
 
  case "$1" in
@@ -2025,3 +2026,8 @@ exit $RETV
 # try install-strip --strip-uneeded -v
 ##
 #less qt-6.7.2/qtdoc/doc/src/configure.qdoc
+##
+#qtc:
+#-DQTC_BUILD_WITH_PCH=OFF -DBUILD_WITH_PCH=OFF
+#^^^is this really a qt-* problem?
+#^^^appears not, seesm rpi doesn't like it so turn it off.
