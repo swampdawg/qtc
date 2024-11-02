@@ -1757,7 +1757,7 @@ fcp_all_install ()
  }
 
  #assume first line is install folder
- d="/"$(tar tvjf "$t" | head -1 | awk '{print $NF}')"/x"
+ d="/"$(tar tvJf "$t" | head -1 | awk '{print $NF}')"/x"
  d=`dirname "$d"`
 
  r=$(ls "$d" 2>/dev/null)
@@ -1769,7 +1769,7 @@ fcp_all_install ()
  #install as current user
  sudo chown `id -un`:`id -gn` "$d"
  chmod -v a+x "$d"
- tar -C / -xvjf "$t"
+ tar -C / -xvJf "$t"
 
  #set user symlink
  (
@@ -1917,6 +1917,9 @@ echo "Stage2" >/tmp/"$NAM"
 	fcp_all || exit 1
 echo "Dependencies" >/tmp/"$NAM"
 	fcp_ldd || exit 1
+	echo "Now run.."
+	echo "./$NAM all-install [tarball]"
+	echo "./$NAM qtc tar"
 	;;
 
 	mkpatch)
