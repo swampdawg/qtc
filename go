@@ -25,7 +25,7 @@ RETV=
 : ${NJ_VER:="1.12.1"}
 
 : ${DB_PKG:="mariadb"}
-: ${DB_VER:="11.4.2"}
+: ${DB_VER:="11.7.0"}
 
 : ${QT_PKG:="qt"}
 : ${QT_VER:="6.7.2"}
@@ -1970,11 +1970,14 @@ echo "Dependencies" >/tmp/"$NAM"
 	dbt-init)
 	shift
 	fcp_dbt_init
+	#hint: wipes and resets db without warning!
 	;;
 
 	dbt)
 	shift
 	fcp_dbt_tool "$@"
+	#hint: D_QT=/usr/local/qt ./go dbt start
+	#hint: D_QT=/usr/local/qt ./go dbt stop
 	;;
 
 	dbt-dump)
@@ -2000,6 +2003,9 @@ echo "Dependencies" >/tmp/"$NAM"
 	dbt-cmd)
 	shift
 	fcp_dbt_tool -e "$@"
+	#hint: D_QT=/usr/local/qt ./go dbt-cmd "show databases"
+	#hint: D_QT=/usr/local/qt ./go dbt-cmd "show tables" mysql
+	#hint: D_QT=/usr/local/qt ./go dbt-cmd "select user,host,password from user" mysql
 	;;
 
 	picotool)
