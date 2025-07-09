@@ -37,7 +37,7 @@ RETV=
 : ${GC_VER:="14.2.0"}
 
 : ${JS_PKG:="node"}
-: ${JS_VER:="v16.17.0"}
+: ${JS_VER:="v22.17.0"}
 
 : ${MD_PKG:="md4c"}
 : ${MD_VER:="0.4.8"}
@@ -2040,3 +2040,22 @@ exit $RETV
 #-DQTC_BUILD_WITH_PCH=OFF -DBUILD_WITH_PCH=OFF
 #^^^is this really a qt-* problem?
 #^^^appears not, seesm rpi doesn't like it so turn it off.
+##
+apt-get install texinfo zlib1g-dev (xgcc)
+apt-get install flex bison (doxygen)
+apt-get install libaio-dev libncurses-dev libgnutls28-dev libpam0g-dev (db)
+apt-get install libtool libusb-1.0-0-dev (openocd)
+rsync -auxv ~/.picorc (picotool)
+apt-get install xsltproc (mqtt)
+apt-get install \
+	libx11-xcb-dev libglu1-mesa-dev libopengl-dev libegl1-mesa-dev \
+	libvulkan-dev python3-html5lib libpulse-dev gperf \
+	libfontconfig-dev libnss3-dev libdbus-1-dev libgbm-dev (qt) \
+	libudev-dev libinput-dev libxkbcommon-x11-dev libwayland-dev \
+	libxrender-dev libxi-dev libxinerama-dev libdrm-dev libxcomposite-dev \
+	libxcursor-dev libxrandr-dev libxshmfence-dev libxtst-dev \
+	libcups2-dev unixodbc-dev libbluetooth-dev libtiff-dev 
+	libasound2-dev libxdamage-dev libgles2-mesa-dev libice-dev 
+	libsm-dev libxkbfile-dev \
+	? '^libxcb.*-dev' libatspi2.0-dev?
+##
