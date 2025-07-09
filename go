@@ -2056,6 +2056,6 @@ apt-get install \
 	libxcursor-dev libxrandr-dev libxshmfence-dev libxtst-dev \
 	libcups2-dev unixodbc-dev libbluetooth-dev libtiff-dev 
 	libasound2-dev libxdamage-dev libgles2-mesa-dev libice-dev 
-	libsm-dev libxkbfile-dev \
-	? '^libxcb.*-dev' libatspi2.0-dev?
+	libsm-dev libxkbfile-dev
+#	? '^libxcb.*-dev' libatspi2.0-dev?
 ##
