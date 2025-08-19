@@ -13,28 +13,28 @@ RETV=
 : ${IC_VER:="72.1"}
 
 : ${Z3_PKG:="z3"}
-: ${Z3_VER:="4.13.0"}
+: ${Z3_VER:="4.15.3"}
 
 : ${LV_PKG:="llvm"}
-: ${LV_VER:="18.1.8"}
+: ${LV_VER:="20.1.0"}
 
 : ${CM_PKG:="cmake"}
 : ${CM_VER:="3.30.3"}
 
 : ${NJ_PKG:="ninja"}
-: ${NJ_VER:="1.12.1"}
+: ${NJ_VER:="1.13.1"}
 
 : ${DB_PKG:="mariadb"}
-: ${DB_VER:="11.7.0"}
+: ${DB_VER:="11.8"}
 
 : ${QT_PKG:="qt"}
-: ${QT_VER:="6.7.2"}
+: ${QT_VER:="6.9.1"}
 
 : ${QC_PKG:="qtc"}
-: ${QC_VER:="14.0.1"}
+: ${QC_VER:="16.0"}
 
 : ${GC_PKG:="gcc"}
-: ${GC_VER:="14.2.0"}
+: ${GC_VER:="15.2.0"}
 
 : ${JS_PKG:="node"}
 : ${JS_VER:="v22.17.0"}
@@ -53,6 +53,12 @@ RETV=
 
 : ${C6_PKG:="qt6ct"}
 : ${C6_VER:="0.10"}
+
+: ${GI_PKG:="git"}
+: ${GI_VER:="2.50.0"}
+
+: ${X2_PKG:="libxml2"}
+: ${X2_VER:="2.14.5"}
 
 fcp_rpi5_hack ()
 {
@@ -76,19 +82,19 @@ fcp_rpi5_hack ()
 
 case `f_go_os_arch` in
 	64)
-	F_GO_TMPFS=11G
+	F_GO_TMPFS=13G
 	#F_GO_SAVFS=1
 	F_GO_TMPFS=$(fcp_rpi5_hack "$F_GO_TMPFS")
 	;;
 
 	*)
-	F_GO_TMPFS="11G,nr_inodes=350k"
+	F_GO_TMPFS="13G,nr_inodes=350k"
 	;;
 esac
 
 PFX=
 
-: ${D_QT:="/usr/local/QT/6700r"}
+: ${D_QT:="/usr/local/QT/6900r"}
 : ${B_QT:=""}
 [ -z "$B_QT" ] && {
 CBB="$D_QT""/bin"
@@ -461,6 +467,70 @@ fcp_llvm_main ()
  esac
 }
 
+fcp_git_main ()
+{
+ PKG="$GI_PKG"
+ VER="$GI_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	gen)
+	(
+	 cd "$SRC" || exit 1
+	 make configure || exit 1
+	) || exit 1
+	;;
+
+	cfg)
+	shift
+OBJ=$SRC
+	fcp_cfg "$@" $GI_CFG
+	;;
+
+	mak)
+	shift
+OBJ=$SRC
+	fcp_mak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	rem)
+	shift
+	fcp_rem "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_git_main gen
+OBJ=$SRC
+	fcp_cfg $GI_CFG || exit 1
+	fcp_mak -j `f_go_bproc` || exit 1
+#	fcp_mak doc || exit 1
+#	fcp_mak install install-doc install-html || exit 1
+	fcp_mak install || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
 fcp_cmake_main ()
 {
  PKG="$CM_PKG"
@@ -502,6 +572,57 @@ fcp_cmake_main ()
 	all)
 	fcp_arc -d "$SRC" || exit 1
 	fcp_ccfg $CM_CFG || exit 1
+	fcp_mak -j `f_go_bproc` || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_xml_main ()
+{
+ PKG="$X2_PKG"
+ VER="$X2_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_ccfg "$@" $X2_CFG
+	;;
+
+	mak)
+	shift
+	fcp_mak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	rem)
+	shift
+	fcp_rem "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_ccfg $X2_CFG || exit 1
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	fcp_del all
@@ -1186,6 +1307,9 @@ EOF
  install -v "$CWD""/sd-gdb-multiarch" "$PFX""/bin/" || exit 1
  install -v "$CWD""/gdbinit" "$PFX""/etc/" || exit 1
  install -v "$CWD""/gdbinit.go" "$PFX""/etc/" || exit 1
+ echo "--gcc-toolchain=${PFX}" > "$CWD""/clang.cfg"
+ install -m 0644 -v "$CWD""/clang.cfg" "$PFX""/bin/clang.cfg" || exit 1
+ install -m 0644 -v "$CWD""/clang.cfg" "$PFX""/bin/clang++.cfg" || exit 1
 }
 
 fcp_gcc_req ()
@@ -1535,8 +1659,7 @@ fcp_picotool_main ()
 fcp_all ()
 {
  local	E="./$NAM"
-# local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja db node md4c icu openocd picotool mqtt qt qt6ct qtc"
- local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja db node md4c icu mqtt qt qt6ct qtc openocd"
+ local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd qtc"
  local	i
 
  [ -z "$PICO_SDK_PATH" ] || L="$L"" picotool"
@@ -1893,6 +2016,16 @@ case "$1" in
 	qt6ct)
 	shift
 	fcp_qt6ct_main "$@"
+	;;
+
+	git)
+	shift
+	fcp_git_main "$@"
+	;;
+
+	xml)
+	shift
+	fcp_xml_main "$@"
 	;;
 
 	all)
