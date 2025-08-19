@@ -4,42 +4,42 @@ Requires:
 
 https://github.com/swampdawg/go
 
-https://github.com/swampdawg/qtc \#(this repo)
+https://github.com/swampdawg/qtc\#(this repo)
 
-|                         |                            |                            |
-| ----------------------- | -------------------------- | -------------------------- |
-|                         | Prebuilt                   | Sources                    |
-| **Contents:**           | **QtCreator 11.0**         | **QtCreator 14.01**        |
-| icu:                    | 72.1                       | 72.1                       |
-| z3:                     | 4.13.0                     | 4.13.0                     |
-| llvm:                   | *18.1.6*                   | 18.1.8                     |
-| cmake:                  | *3.24.3*                   | 3.30.3                     |
-| ninja:                  | *1.11.1*                   | 1.12.1                     |
-| mariadb:                | 11.4.2                     | 11.4.2                     |
-| qt:                     | *6.5*                      | 6.7.2                      |
-| qtc:                    | *11.0*                     | 14.0.1                     |
-| gcc:                    | 14.2.0                     | 14.2.0                     |
-| node:                   | 16.17.0                    | 16.17.0                    |
-| md4c:                   | 0.4.8                      | 0.4.8                      |
-| doxygen:                | 1.9.5                      | 1.9.5                      |
-| openocd:                | 0.0.0 \#?                  | 0.0.0 \#?                  |
-| mosquitto:              | 2.0.15                     | 2.0.15                     |
-| qt6ct:                  | 0.10                       | 0.10                       |
-| **Pico cross compiler** |                            |                            |
-| xgcc:                   | (pico arm-none-eabi)       | (pico arm-none-eabi)       |
-| binutils:               | 2.43                       | 2.43                       |
-| gcc:                    | 14.2.0                     | 14.2.0                     |
-| newlib:                 | 4.4.0.20231231             | 4.4.0.20231231             |
-| xgcc: (\*1)             | (pico riscv32-unknown-elf) | (pico riscv32-unknown-elf) |
-| binutils:               | 2.43                       | 2.43                       |
-| gcc:                    | 14.2.0                     | 14.2.0                     |
-| newlib:                 | 4.4.0.20231231             | 4.4.0.20231231             |
-| **Source**              |                            |                            |
-| tarball:                | n/a (\*2)                  | all.tar                    |
+|                     |                            |                            |
+| ------------------- | -------------------------- | -------------------------- |
+|                     | Prebuilt                   | Sources                    |
+| Contents:           | QtCreator 14.01            | QtCreator 14.01            |
+| icu:                | 72.1                       | 72.1                       |
+| z3:                 | 4.13.0                     | 4.13.0                     |
+| llvm:               | 18.1.8                     | 18.1.8                     |
+| cmake:              | 3.30.3                     | 3.30.3                     |
+| ninja:              | 1.12.1                     | 1.12.1                     |
+| mariadb:            | 11.7.0                     | 11.7.0                     |
+| qt:                 | 6.7.2                      | 6.7.2                      |
+| qtc:                | 14.0.1                     | 14.0.1                     |
+| gcc:                | 14.2.0                     | 14.2.0                     |
+| node:               | 22.17.0                    | 22.17.0                    |
+| md4c:               | 0.4.8                      | 0.4.8                      |
+| doxygen:            | 1.9.5                      | 1.9.5                      |
+| openocd:            | 0.0.0 \#?                  | 0.0.0 \#?                  |
+| mosquitto:          | 2.0.15                     | 2.0.15                     |
+| qt6ct:              | 0.10                       | 0.10                       |
+| Pico cross compiler |                            |                            |
+| xgcc:               | (pico arm-none-eabi)       | (pico arm-none-eabi)       |
+| binutils:           | 2.43                       | 2.43                       |
+| gcc:                | 14.2.0                     | 14.2.0                     |
+| newlib:             | 4.4.0.20231231             | 4.4.0.20231231             |
+| xgcc:(\*1)          | (pico riscv32-unknown-elf) | (pico riscv32-unknown-elf) |
+| binutils:           | 2.43                       | 2.43                       |
+| gcc:                | 14.2.0                     | 14.2.0                     |
+| newlib:             | 4.4.0.20231231             | 4.4.0.20231231             |
+| Source              |                            |                            |
+| tarball:            | n/a(\*2)                   | all.tar                    |
 
-*Italics above denote an older version.*
+Italics above denote an older version.
 
-(\*1) Untested. Author does not own a pico2 at time of writing.
+(\*1) Untested. Author does not own a pico2 at this time.
 
 (\*2) Not enough space to upload.
 
@@ -47,85 +47,70 @@ The prebuilt binary can be used (a) as-is or (b) used to build the
 sources. Alternatively (c), the sources can be built from scratch.
 
 1)  For those with no large project compilation experience.
-
 2)  For those who desire to get the sources built quicker.
-
 3)  For those who want to work it all out for themselves.
 
-|                                                                                                  |                                                                                                                                            |
-| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Pick your platform**                                                                           |                                                                                                                                            |
-| x86\_64:                                                                                         | [qtc-(sdu-linuxmint-21.3-virginia)-11.0-bin.tar.xz](https://drive.google.com/file/d/1wW0zOf1nKxPIcDKKWESTr7uUt2MZYB4y/view?usp=drive_link) |
-| md5sum:                                                                                          | 5feee878ad06422fd0a5131e3f3d107f                                                                                                           |
-| dev: (\*1)                                                                                       | qtc-(sdu-linuxmint-21.3-virginia)-11.0.dev                                                                                                 |
-| ldd: (\*2)                                                                                       | qtc-(sdu-linuxmint-21.3-virginia)-11.0.ldd                                                                                                 |
-|                                                                                                  |                                                                                                                                            |
-| aarch64:                                                                                         | [qtc-(pi24-debian-12-bookworm)-11.0-bin.tar.xz](https://drive.google.com/file/d/1szGcanbdNG94saZ2tVM8VtRXsbrVb6x_/view?usp=drive_link)     |
-| md5sum:                                                                                          | 45bffc8c8f63cbec871e2ea95c18e7d4                                                                                                           |
-| dev: (\*1)                                                                                       | qtc-(pi24-debian-12-bookworm)-11.0.dev                                                                                                     |
-| ldd: (\*2)                                                                                       | qtc-(pi24-debian-12-bookworm)-11.0.ldd                                                                                                     |
-| **Source**                                                                                       |                                                                                                                                            |
-| [all.tar](https://drive.google.com/file/d/10T9Tmmzg0URicWWA2sXE8uVFRI_bFRRs/view?usp=drive_link) |                                                                                                                                            |
-| md5sum:                                                                                          | 92d64850d7f6249e04c8f4c9c63d8171                                                                                                           |
+|                                                                                                      |                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pick your platform                                                                                   |                                                                                                                                                |
+| x86\_64:                                                                                             | [*_qtc-(sdu-linuxmint-21.3-virginia)-11.0-bin.tar.xz_*](https://drive.google.com/file/d/1wW0zOf1nKxPIcDKKWESTr7uUt2MZYB4y/view?usp=drive_link) |
+| md5sum:                                                                                              | 5feee878ad06422fd0a5131e3f3d107f                                                                                                               |
+| dev:(\*1)                                                                                            | qtc-(sdu-linuxmint-21.3-virginia)-11.0.dev                                                                                                     |
+| ldd:(\*2)                                                                                            | qtc-(sdu-linuxmint-21.3-virginia)-11.0.ldd                                                                                                     |
+|                                                                                                      |                                                                                                                                                |
+| aarch64:                                                                                             | [*_qtc-(pi24-debian-12-bookworm)-11.0-bin.tar.xz_*](https://drive.google.com/file/d/1szGcanbdNG94saZ2tVM8VtRXsbrVb6x_/view?usp=drive_link)     |
+| md5sum:                                                                                              | 45bffc8c8f63cbec871e2ea95c18e7d4                                                                                                               |
+| dev:(\*1)                                                                                            | qtc-(pi24-debian-12-bookworm)-11.0.dev                                                                                                         |
+| ldd:(\*2)                                                                                            | qtc-(pi24-debian-12-bookworm)-11.0.ldd                                                                                                         |
+| Source                                                                                               |                                                                                                                                                |
+| [*_all.tar_*](https://drive.google.com/file/d/10T9Tmmzg0URicWWA2sXE8uVFRI_bFRRs/view?usp=drive_link) |                                                                                                                                                |
+| md5sum:                                                                                              | 92d64850d7f6249e04c8f4c9c63d8171                                                                                                               |
 
 (\*1) QtCreator will launch(\*2) without these packages but will not be
 able to build much without at least some of these. This is simply a list
 of dev packages on the build box.
 
-(\*2) List of QT runtime dependencies. Search ‘sdldd’ below.
+(\*2) List of QT runtime dependencies. See references to ‘sdldd’ below.
 
-**<span class="underline">Installation</span>**
+Installation
 
-Binary unpacks to /usr/local/QT/6500r/. This can be changed when it is
+Binary unpacks to /usr/local/qt/. This can be changed when it is
 rebuilt. If you intend to use it as-is, aka (a) above, then do not move
 it.
 
 Installation for (a): download qtc\*-bin.tar.xz to some folder then..
 
-$ sudo mkdir /usr/local/QT/
+$ sudo mkdir /usr/local/qt/ 
 
-$ sudo chown \`id -un\`:\`id -gn\` /usr/local/QT/
+$ sudo chown \`id -un\`:\`id -gn\` /usr/local/qt/ 
 
-$ tar -C / -xvJf \[tarball\]
+$ tar -C / -xvJf \[tarball\] 
 
-$ pushd /usr/local/
+Ensure ‘sd-qt’ can be found in $PATH. eg:..
 
-$ sudo ln -s QT/6500r qt
+$ mkdir -p \~/bin
 
-$ popd
+$ cd \~/bin
 
-$ cd \~
-
-$ mkdir -p bin
-
-$ pushd bin
-
-$ ln -s /usr/local/QT/6500r/bin/sd-qt
-
-$ popd
-
-You should refer to the installation via the /usr/local/qt/\* symlink in
-your projects and so forth rather than /usr/local/QT/6500r/\*. Both will
-work but should you decide to rebuild it yourself, aka (b) above, then
-the default installation path is /usr/local/qt/ and will save amending
-project paths at a later date.
+$ ln -s /usr/local/qt/bin/sd-qt
 
 Invocation:
 
-\#check QT works..
+\#check QT works.. 
 
-$ sd-qt assistant \#wait for indexing to complete then quit
+$ sd-qt assistant\#wait for indexing to complete then quit 
 
-$ sd-qt designer \#then quit
+$ sd-qt designer\#then quit 
 
 Note:
 
 QtCreator stores settings in \~/.config/QtProject/ should you desire to
-take steps to preserve settings from an older version.
+take steps to preserve settings from an older version. See ‘go qtcrun’
+for a hint on how to use “-settingspath”.
 
-Now for QtCreator itself..
+Now for QtCreator itself. Point your GUI launcher at..
 
-$ sd-qt qtcreator &
+$ /usr/local/qt/bin/sd-qtc
 
 The author likes..
 
@@ -135,17 +120,17 @@ The fonts may be ugly. Try..
 
 $ sd-qt qt6ct
 
-**<span class="underline">Sources</span>**
+Sources
 
 Some sources are verbatim. Some have been generated from github repos.
 Some are verbatim and merely repacked to fit the traditional tarball
-naming scheme.
+naming scheme. 
 
 Dependencies:
 
-\*.dev
+\*.dev 
 
-\*.ldd
+\*.ldd 
 
 As noted earlier, the "dev" list are those packages on the author's
 machine at the time. Some may not be relevant to the build. The omission
@@ -163,23 +148,13 @@ which there is no source. This is low down to the “2do” list. For those
 who don’t like it, delete it. Its only function is to produce the above
 two files.
 
-Instructions for, aka (b), above. Assuming you’ve done (a) then remove
-the symlink and replace it with a directory for it is the default build
-installation target..
-
-$ pushd /usr/local/
-
-$ sudo rm -v qt
-
-$ sudo mkdir qt
-
-$ sudo chown \`id -un\`:\`id -gn\` qt
-
-$ popd
+Building using binary – (b) method
 
 \# install all the dev packages as hinted above.
 
-$ B\_QT=/usr/local/QT/6500r D\_QT=/usr/local/qt ./go all-bootstrap
+Once the source build is verified to work..
+
+$ D\_QT=/usr/local/QT/6700r B\_QT=/usr/local/qt ./go all-bootstrap
 
 \#^^^the above takes a very long time and is a waste of time out of the
 gate.
@@ -192,68 +167,68 @@ Edit 'go' and change..
 
 : ${D\_QT:="/usr/local/QT/6500r"}
 
-..to..
+..to.. 
 
 : ${D\_QT:="/usr/local/qt"}
 
 Now you can..
 
-$ B\_QT=/usr/local/QT/6500r ./go bootstrap
+$ B\_QT=/usr/local/QT/6500r ./go bootstrap 
 
 \#^^^will build a minimal build environment. If this fails you'll be
-missing
+missing 
 
 \#^^^something fundamental. Start with understanding fcp\_bootstrap
-function.
+function. 
 
 \#^^^look in relevant log/\*/\*.log file.
 
-eg: 'llvm' fails:
+eg: 'llvm' fails: 
 
-$ B\_QT=/usr/local/QT/6500r ./go llvm del obj
+$ B\_QT=/usr/local/QT/6500r ./go llvm del obj 
 
-\#^^^delete OBJ
+\#^^^delete OBJ 
 
-$ B\_QT=/usr/local/QT/6500r ./go llvm cfg
+$ B\_QT=/usr/local/QT/6500r ./go llvm cfg 
 
-\#^^^repeat until prerequisites solved.
+\#^^^repeat until prerequisites solved. 
 
-$ B\_QT=/usr/local/QT/6500r ./go llvm mak -j$NPROC
+$ B\_QT=/usr/local/QT/6500r ./go llvm mak -j$NPROC 
 
-\#^^^ditto then manually install..
+\#^^^ditto then manually install.. 
 
-$ B\_QT=/usr/local/QT/6500r ./go llvm ins
+$ B\_QT=/usr/local/QT/6500r ./go llvm ins 
 
-$ B\_QT=/usr/local/QT/6500r ./go llvm del all
+$ B\_QT=/usr/local/QT/6500r ./go llvm del all 
 
-\#^^^delete OBJ and SRC
+\#^^^delete OBJ and SRC 
 
-Check it runs to completion..
+Check it runs to completion.. 
 
-$ B\_QT=/usr/local/QT/6500r ./go llvm all
+$ B\_QT=/usr/local/QT/6500r ./go llvm all 
 
-Once all the phases are complete, check it works from scratch..
+Once all the phases are complete, check it works from scratch.. 
 
-$ B\_QT=/usr/local/QT/6500r ./go trash-target
+$ B\_QT=/usr/local/QT/6500r ./go trash-target 
 
-$ B\_QT=/usr/local/QT/6500r ./go bootstrap
+$ B\_QT=/usr/local/QT/6500r ./go bootstrap 
 
-With "bootstrap" working flawlessly it is then possible to move onto..
+With "bootstrap" working flawlessly it is then possible to move onto.. 
 
-$ ./go all
+$ ./go all 
 
-..basically repeating the debug approach outlined above. Finally it is
+..basically repeating the debug approach outlined above. Finally it is 
 
-possible to return to..
+possible to return to.. 
 
-$ B\_QT=/usr/local/QT/6500r ./go all-bootstrap
+$ B\_QT=/usr/local/QT/6500r ./go all-bootstrap 
 
 \#^^^only once this succeeds is it possible to remove
-/usr/local/QT/6500r/ and
+/usr/local/QT/6500r/ and 
 
-\#^^^rely on /usr/local/qt/ alone.
+\#^^^rely on /usr/local/qt/ alone. 
 
-**<span class="underline">Footnotes</span>**
+Footnotes
 
 1\) Linux version used is 64Gb mint 21.3 virginia with 1Gb paging.
 
@@ -338,3 +313,6 @@ with it.
 ^^^scratch that, make a pdf instead\!
 
 4\) picotool
+
+5\) sdldd bug creating \*.ldd file (ie it doesn’t) - string out of
+range. fix.
