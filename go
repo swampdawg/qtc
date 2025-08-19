@@ -1536,7 +1536,7 @@ fcp_all ()
 {
  local	E="./$NAM"
 # local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja db node md4c icu openocd picotool mqtt qt qt6ct qtc"
- local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja db node md4c icu mqtt qt qt6ct qtc openocd"
+ local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja db node md4c icu mqtt qt qt6ct openocd qtc"
  local	i
 
  [ -z "$PICO_SDK_PATH" ] || L="$L"" picotool"
