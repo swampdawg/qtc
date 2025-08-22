@@ -236,6 +236,10 @@ C6_CFG="
 -DCMAKE_INSTALL_PREFIX=${D_QT}
 "
 
+X2_CFG="
+--without-python
+"
+
 #dbt (not required for build)
 : ${DB_M_BASE:="${D_QT}"}
 : ${DB_M_USER:=$(id -un)}
@@ -597,7 +601,7 @@ fcp_xml_main ()
 
 	cfg)
 	shift
-	fcp_ccfg "$@" $X2_CFG
+	fcp_cfg "$@" $X2_CFG
 	;;
 
 	mak)
@@ -622,7 +626,7 @@ fcp_xml_main ()
 
 	all)
 	fcp_arc -d "$SRC" || exit 1
-	fcp_ccfg $X2_CFG || exit 1
+	fcp_cfg $X2_CFG || exit 1
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	fcp_del all
@@ -2180,6 +2184,7 @@ apt-get install libaio-dev libncurses-dev libgnutls28-dev libpam0g-dev (db)
 apt-get install libtool libusb-1.0-0-dev (openocd)
 rsync -auxv ~/.picorc (picotool)
 apt-get install xsltproc (mqtt)
+apt-get install tcl gettext (git)
 apt-get install \
 	libx11-xcb-dev libglu1-mesa-dev libopengl-dev libegl1-mesa-dev \
 	libvulkan-dev python3-html5lib libpulse-dev gperf \
