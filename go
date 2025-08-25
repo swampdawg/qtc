@@ -1678,7 +1678,7 @@ fcp_picotool_main ()
 fcp_all ()
 {
  local	E="./$NAM"
- local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd qtc picotool"
+ local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd picotool qtc"
  local	i
 
  for i in $L
