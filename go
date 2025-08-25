@@ -1663,23 +1663,24 @@ fcp_picotool_main ()
 fcp_all ()
 {
  local	E="./$NAM"
- local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd qtc"
+ local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd qtc picotool"
  local	i
-
- [ -z "$PICO_SDK_PATH" ] || L="$L"" picotool"
 
  for i in $L
  do
+	case "$i" in
+		picotool)
+	$D_QT/bin/sd-qt ./go "$i" all || exit 1
+		;;
+
+		*)
 	$E $i all || {
 		echo "$NAM: Failed on $i" 1>&2
 		exit 1
 	}
+		;;
+	esac
  done
-
- [ -z "$PICO_SDK_PATH" ] && {
-	echo "$NAM: picotool (skipped)" 1>&2
-	echo "%NAM: PICO_SDK_PATH not set" 1>&2
- }
 }
 
 fcp_ldd ()
