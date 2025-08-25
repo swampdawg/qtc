@@ -452,6 +452,21 @@ fcp_llvm_main ()
 	fcp_del "$@"
 	;;
 
+	save)
+	f_go_tmpfs save "$SRC"
+	f_go_tmpfs save "$OBJ"
+	;;
+
+	load)
+	f_go_tmpfs load "$SRC"
+	f_go_tmpfs load "$OBJ"
+	;;
+
+	trash-saves)
+	f_go_tmpfs "$@" "$SRC"
+	f_go_tmpfs "$@" "$OBJ"
+	;;
+
 	all)
 	fcp_arc -d "$SRC" || exit 1
 	fcp_llvm_cfg || exit 1
