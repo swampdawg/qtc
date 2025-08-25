@@ -82,7 +82,7 @@ fcp_rpi5_hack ()
 
 case `f_go_os_arch` in
 	64)
-	F_GO_TMPFS=13G
+	F_GO_TMPFS=15G
 	#F_GO_SAVFS=1
 	F_GO_TMPFS=$(fcp_rpi5_hack "$F_GO_TMPFS")
 	;;
