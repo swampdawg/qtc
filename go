@@ -16,7 +16,7 @@ RETV=
 : ${Z3_VER:="4.15.3"}
 
 : ${LV_PKG:="llvm"}
-: ${LV_VER:="20.1.0"}
+: ${LV_VER:="21.1.0"}
 
 : ${CM_PKG:="cmake"}
 : ${CM_VER:="3.30.3"}
@@ -59,6 +59,12 @@ RETV=
 
 : ${X2_PKG:="libxml2"}
 : ${X2_VER:="2.14.5"}
+
+: ${DC_PKG:="distcc"}
+: ${DC_VER:="3.4"}
+
+: ${CA_PKG:="ccache"}
+: ${CA_VER:="4.11.3"}
 
 fcp_rpi5_hack ()
 {
@@ -1675,6 +1681,104 @@ fcp_picotool_main ()
  esac
 }
 
+fcp_distcc_main ()
+{
+ PKG="$DC_PKG"
+ VER="$DC_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	gen)
+	shift
+	f_go_gen "$@"
+	;;
+
+	cfg)
+	shift
+	fcp_cfg "$@"
+	;;
+
+	mak)
+	shift
+	fcp_mak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	f_go_gen
+	fcp_cfg || exit 1
+	fcp_mak -j `f_go_bproc` || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_ccache_main ()
+{
+ PKG="$CA_PKG"
+ VER="$CA_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_ccfg "$@"
+	;;
+
+	mak)
+	shift
+	fcp_cmak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_cins "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_ccfg || exit 1
+	fcp_cmak -j `f_go_bproc` || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
 fcp_all ()
 {
  local	E="./$NAM"
@@ -2164,6 +2268,18 @@ echo "Dependencies" >/tmp/"$NAM"
 	picotool)
 	shift
 	fcp_picotool_main "$@"
+	;;
+
+	#undocumented
+	distcc)
+	shift
+	fcp_distcc_main "$@"
+	;;
+
+	#undocumented
+	ccache)
+	shift
+	fcp_ccache_main "$@"
 	;;
 
 	dtar)
