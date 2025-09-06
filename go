@@ -45,6 +45,12 @@ RETV=
 : ${DX_PKG:="doxygen"}
 : ${DX_VER:="1.9.5"}
 
+: ${HB_PKG:="harfbuzz"}
+: ${HB_VER:="11.4.5"}
+
+: ${PB_PKG:="protobuf"}
+: ${PB_VER:="32.0"}
+
 : ${OO_PKG:="openocd"}
 : ${OO_VER:="0.0.0"}
 
@@ -185,6 +191,14 @@ ${LV_LV_CFG}
 DX_CFG="
 -DCMAKE_INSTALL_PREFIX=${D_QT}
 ${LV_LV_CFG}
+"
+
+HB_CFG="
+-DCMAKE_INSTALL_PREFIX=${D_QT}
+"
+
+PB_CFG="
+-DCMAKE_INSTALL_PREFIX=${D_QT}
 "
 
 #-skip qtwebengine
@@ -1087,6 +1101,108 @@ fcp_doxygen_main ()
 	all)
 	fcp_arc -d "$SRC" || exit 1
 	fcp_ccfg $DX_CFG || exit 1
+	fcp_mak -j `f_go_bproc` || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_harfbuzz_main ()
+{
+ PKG="$HB_PKG"
+ VER="$HB_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_ccfg "$@" $HB_CFG
+	;;
+
+	mak)
+	shift
+	fcp_mak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	rem)
+	shift
+	fcp_rem "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_ccfg $HB_CFG || exit 1
+	fcp_mak -j `f_go_bproc` || exit 1
+	fcp_ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac
+}
+
+fcp_protobuf_main ()
+{
+ PKG="$PB_PKG"
+ VER="$PB_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_ccfg "$@" $PB_CFG
+	;;
+
+	mak)
+	shift
+	fcp_mak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@"
+	;;
+
+	rem)
+	shift
+	fcp_rem "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_ccfg $PB_CFG || exit 1
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	fcp_del all
@@ -2103,6 +2219,16 @@ case "$1" in
 	fcp_doxygen_main "$@"
 	;;
 
+	harfbuzz)
+	shift
+	fcp_harfbuzz_main "$@"
+	;;
+
+	protobuf)
+	shift
+	fcp_protobuf_main "$@"
+	;;
+
 	qt)
 	shift
 	fcp_qt_main "$@"
@@ -2328,4 +2454,5 @@ apt-get install \
 	libasound2-dev libxdamage-dev libgles2-mesa-dev libice-dev 
 	libsm-dev libxkbfile-dev
 #	? '^libxcb.*-dev' libatspi2.0-dev?
+#!protobuf is going to internet for build!
 ##
