@@ -16,7 +16,7 @@ RETV=
 : ${Z3_VER:="4.15.3"}
 
 : ${LV_PKG:="llvm"}
-: ${LV_VER:="21.1.0"}
+: ${LV_VER:="20.1.0"}
 
 : ${CM_PKG:="cmake"}
 : ${CM_VER:="3.30.3"}
