@@ -28,7 +28,7 @@ RETV=
 : ${DB_VER:="11.8"}
 
 : ${QT_PKG:="qt"}
-: ${QT_VER:="6.9.2"}
+: ${QT_VER:="6.9.3"}
 
 : ${QC_PKG:="qtc"}
 : ${QC_VER:="16.0"}
