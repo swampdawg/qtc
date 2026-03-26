@@ -109,7 +109,7 @@ esac
 
 PFX=
 
-export DISTCC_HOSTS="localhost/15 hhpc/15"
+#export DISTCC_HOSTS="localhost/15 hhpc/15"
 
 : ${D_QT:="/usr/local/QT/6900r"}
 : ${B_QT:=""}
