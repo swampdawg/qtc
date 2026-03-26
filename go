@@ -16,13 +16,16 @@ RETV=
 : ${Z3_VER:="4.15.3"}
 
 : ${LV_PKG:="llvm"}
-: ${LV_VER:="20.1.0"}
+: ${LV_VER:="21.1.0"}
 
 : ${CM_PKG:="cmake"}
 : ${CM_VER:="3.30.3"}
 
 : ${NJ_PKG:="ninja"}
 : ${NJ_VER:="1.13.1"}
+
+: ${PY_PKG:="Python"}
+: ${PY_VER:="3.9.5"}
 
 : ${DB_PKG:="mariadb"}
 : ${DB_VER:="11.8"}
@@ -31,7 +34,7 @@ RETV=
 : ${QT_VER:="6.9.3"}
 
 : ${QC_PKG:="qtc"}
-: ${QC_VER:="16.0"}
+: ${QC_VER:="17.0"}
 
 : ${GC_PKG:="gcc"}
 : ${GC_VER:="15.2.0"}
@@ -49,7 +52,7 @@ RETV=
 : ${HB_VER:="11.4.5"}
 
 : ${PB_PKG:="protobuf"}
-: ${PB_VER:="32.0"}
+: ${PB_VER:="3.12.4"}
 
 : ${OO_PKG:="openocd"}
 : ${OO_VER:="0.0.0"}
@@ -106,18 +109,20 @@ esac
 
 PFX=
 
+export DISTCC_HOSTS="localhost/15 hhpc/15"
+
 : ${D_QT:="/usr/local/QT/6900r"}
 : ${B_QT:=""}
 [ -z "$B_QT" ] && {
 CBB="$D_QT""/bin"
 CBS="$D_QT""/sbin"
-CC="$CBB""/clang"
-CXX="$CBB""/clang++"
+CC="$CBB""/distcc-clang"
+CXX="$CBB""/distcc-clang++"
 	} || {
 CBB="$B_QT""/bin"
 CBS="$B_QT""/sbin"
-CC="$CBB""/gcc"
-CXX="$CBB""/g++"
+CC="$CBB""/distcc-gcc"
+CXX="$CBB""/distcc-g++"
 }
 PTH=$CBS:$CBB":/usr/local/sd/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 LDP="$D_QT""/lib64:""$D_QT""/lib:""$D_QT""/lib32"
@@ -132,8 +137,8 @@ IC_CFG="
 "
 
 LV_LV_CFG="
--DCMAKE_C_COMPILER=${CBB}/clang
--DCMAKE_CXX_COMPILER=${CBB}/clang++
+-DCMAKE_C_COMPILER=${CBB}/distcc-clang
+-DCMAKE_CXX_COMPILER=${CBB}/distcc-clang++
 -DCMAKE_AR=${CBB}/llvm-ar
 -DCMAKE_NM=${CBB}/llvm-nm
 -DCMAKE_RANLIB=${CBB}/llvm-ranlib
@@ -153,6 +158,15 @@ LV_CFG="
 NJ_CFG="
 -DCMAKE_INSTALL_PREFIX=${D_QT}
 $LV_LV_CFG
+"
+#NJ_CFG="
+#--prefix=${D_QT}
+#$LV_LV_CFG
+#"
+
+PY_CFG="
+--enable-optimizations
+--enable-shared
 "
 
 CM_CFG="
@@ -197,8 +211,11 @@ HB_CFG="
 -DCMAKE_INSTALL_PREFIX=${D_QT}
 "
 
+#PB_CFG="
+#-DCMAKE_INSTALL_PREFIX=${D_QT}
+#"
 PB_CFG="
--DCMAKE_INSTALL_PREFIX=${D_QT}
+--prefix=${D_QT}
 "
 
 #-skip qtwebengine
@@ -214,12 +231,15 @@ QT_CFG="
 -confirm-license
 -icu -I ${D_QT}/include -L ${D_QT}/lib
 -install-examples-sources
+-skip qtwebengine
 --
 -DCMAKE_ASM_FLAGS="-fno-integrated-as"
 -DQT_BUILD_EXAMPLES_BY_DEFAULT=OFF
 -DQT_BUILD_TESTS_BY_DEFAULT=OFF
 -DQT_BUILD_TOOLS_BY_DEFAULT=ON
 -DQT_INSTALL_EXAMPLES_SOURCES=ON
+-DQT_BUILD_DOCS=ON
+-DQT_GENERATE_SBOM=OFF
 "
 #-DQT_NO_MAKE_EXAMPLES=ON
 
@@ -459,7 +479,7 @@ fcp_llvm_main ()
 	shift
 	fcp_ins "$@"
 	find "$D_QT" -type f -name 'ompdModule.so' \
-		-exec chmod -v u+w '{}' ';'
+		-exec chmod -v u+w '{}' ';' || exit 1
 	;;
 
 	rem)
@@ -713,6 +733,7 @@ fcp_ninja_main ()
 	all)
 	fcp_arc -d "$SRC" || exit 1
 	fcp_ccfg $NJ_CFG || exit 1
+#fcp_cfg $NJ_CFG || exit 1
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	fcp_del all
@@ -721,6 +742,61 @@ fcp_ninja_main ()
 	*)
 	;;
  esac
+}
+
+fcp_python_main ()
+{
+ PKG="$PY_PKG"
+ VER="$PY_VER"
+ f_go_init
+ PFX="$D_QT"
+
+ case "$1" in
+	arc)
+	shift
+	fcp_arc "$@" "$SRC"
+	;;
+
+	cfg)
+	shift
+	fcp_cfg "$@" $PY_CFG
+	;;
+
+	mak)
+	shift
+	fcp_mak "$@"
+	;;
+
+	ins)
+	shift
+	fcp_ins "$@" || exit 1
+	python3 --version
+	python3 -m pip --version
+	python3 -m pip install html5lib || exit 1
+	python3 -c 'help("modules")' | egrep "html5lib" || exit 1
+	;;
+
+	rem)
+	shift
+	fcp_rem "$@"
+	;;
+
+	del)
+	shift
+	fcp_del "$@"
+	;;
+
+	all)
+	fcp_arc -d "$SRC" || exit 1
+	fcp_cfg $PY_CFG || exit 1
+	fcp_mak -j `f_go_bproc` || exit 1
+	fcp_python_main ins || exit 1
+	fcp_del all
+	;;
+
+	*)
+	;;
+ esac 
 }
 
 fcp_db_main ()
@@ -965,8 +1041,8 @@ fcp_node_main ()
 	cfg)
 	shift
 	(cd "$SRC" || exit 1
-	CC="$CBB/clang -Wno-enum-constexpr-conversion" \
-	CXX="$CBB/clang++ -Wno-enum-constexpr-conversion" \
+	CC="$CBB/distcc-clang -Wno-enum-constexpr-conversion" \
+	CXX="$CBB/distcc-clang++ -Wno-enum-constexpr-conversion" \
 	./configure "$@" $JS_CFG || exit 1
 	) || exit 1
 	;;
@@ -1202,7 +1278,9 @@ fcp_protobuf_main ()
 
 	all)
 	fcp_arc -d "$SRC" || exit 1
-	fcp_ccfg $PB_CFG || exit 1
+#	fcp_ccfg $PB_CFG || exit 1
+f_go_gen || exit 1
+fcp_cfg $PB_CFG || exit 1
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	fcp_del all
@@ -1229,24 +1307,55 @@ fcp_qt_examples ()
  esac
 }
 
+#fcp_qt_doc ()
+#{
+# (
+# (mkdir -p "$OBJ" && mkdir -p "$CWD""/log/doc") || exit 1
+# cd "$OBJ" && \
+# cmake --build . --target docs | \
+# tee "$CWD""/log/doc/doc.""$SRC"".log"
+# [ ${PIPESTATUS[0]} -eq 0 ] || return 1
+# ) || exit 1
+#
+# case "$1" in
+#	install)
+#	cmake --build . --target install_docs
+#	fcp_qt_examples install
+#	;;
+#
+#	*)
+#	;;
+# esac
+#}
+
 fcp_qt_doc ()
 {
+ local	m="$D_QT""/bin/ninja"
+
  (
- (mkdir -p "$OBJ" && mkdir -p "$CWD""/log/doc") || exit 1
- cd "$OBJ" && \
- ninja "$@" 2>&1 | \
- tee "$CWD""/log/doc/doc.""$SRC"".log"
- [ ${PIPESTATUS[0]} -eq 0 ] || return 1
+ cd "$OBJ" || exit 1
+ case "$1" in
+	install)
+	"$m" install_html_docs || exit 1
+	"$m" install_qch_docs || exit 1
+	;;
+
+	*)
+	"$m" html_docs || exit 1
+	"$m" qch_docs || exit 1
+	;;
+ esac
  ) || exit 1
 
  case "$1" in
-	install*)
+	install)
 	fcp_qt_examples install
 	;;
 
 	*)
 	;;
  esac
+
 }
 
 fcp_qt_arc ()
@@ -1318,8 +1427,8 @@ fcp_qt_main ()
 	fcp_cmak -j `f_go_bproc` || exit 1
 	fcp_cins || exit 1
 	[ -f "$CBB/qdoc" ] && {
-		fcp_qt_doc docs || exit 1
-		fcp_qt_doc install_docs || exit 1
+		fcp_qt_doc || exit 1
+		fcp_qt_doc install || exit 1
 		} || {
 		echo "$NAM: No qdoc!" 1>&2
 		exit 1
@@ -1396,6 +1505,7 @@ fcp_qtc_main ()
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	f_go_tar
+	cp -v "sd-qt" $"D_QT""/bin/"
 	fcp_del all
 	;;
 
@@ -1451,6 +1561,22 @@ EOF
  echo "--gcc-toolchain=${PFX}" > "$CWD""/clang.cfg"
  install -m 0644 -v "$CWD""/clang.cfg" "$PFX""/bin/clang.cfg" || exit 1
  install -m 0644 -v "$CWD""/clang.cfg" "$PFX""/bin/clang++.cfg" || exit 1
+
+ local	i
+ local	l="distcc-gcc distcc-g++ distcc-clang distcc-clang++"
+
+ install -m 0755 -v "$CWD""/distcc-compile" "$PFX""/bin/distcc-compile" || exit 1
+ (
+ cd "$PFX""/bin" || exit 1
+ for i in $l
+ do
+	rm -f "$i"
+	ln -sv distcc-compile "$i" || exit 1
+ done
+ ) || exit 1
+ mkdir -p "$HOME""/.config/systemd/user/" || exit 1
+ install -m 0644 -v "$CWD""/distccd.service" "$HOME""/.config/systemd/user/" || exit 1
+ systemctl --user daemon-reload || exit 1
 }
 
 fcp_gcc_req ()
@@ -1898,7 +2024,8 @@ fcp_ccache_main ()
 fcp_all ()
 {
  local	E="./$NAM"
- local	L="sdqt gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd picotool qtc"
+# local	L="sdqt gcc xgcc z3 doxygen llvm cmake python ninja git xml db node md4c icu mqtt protobuf qt qt6ct openocd picotool qtc"
+ local	L="sdqt distcc gcc xgcc z3 doxygen llvm cmake ninja git xml db node md4c icu mqtt qt qt6ct openocd picotool qtc"
  local	i
 
  for i in $L
@@ -1944,7 +2071,7 @@ fcp_ldd ()
 fcp_bootstrap ()
 {
  local	E="./$NAM"
- local	B="sdqt gcc z3 llvm cmake"
+ local	B="sdqt distcc gcc z3 llvm cmake"
 
  [ -f "$D_QT""/bin/sd-qt" ] && {
 	echo "$NAM: $D_QT must be empty!" 2>&1
@@ -1970,9 +2097,10 @@ fcp_trash_target ()
  (
  cd "$D_QT" || exit 1
 
- find . -mindepth 1 -maxdepth 1 -type d -exec rm -rv '{}' ';'
- find . -mindepth 1 -maxdepth 1 -type f -exec rm -fv '{}' ';'
- )
+ find . -mindepth 1 -maxdepth 1 -type d -exec rm -rv '{}' ';' || exit 1
+ find . -mindepth 1 -maxdepth 1 -type f -exec rm -fv '{}' ';' || exit 1
+ ) || exit 1
+ find "$D_QT" || exit 1
 }
 
 #eg: PKG=qt VER=5.15.2 ./go mkpatch
@@ -2454,5 +2582,8 @@ apt-get install \
 	libasound2-dev libxdamage-dev libgles2-mesa-dev libice-dev 
 	libsm-dev libxkbfile-dev
 #	? '^libxcb.*-dev' libatspi2.0-dev?
-#!protobuf is going to internet for build!
+#!protobuf is going to internet for build! Instead..
+#^^^apt-get install protobuf-compiler
+##
+#systemctl --user start distccd.service
 ##
