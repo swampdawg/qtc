@@ -1505,7 +1505,7 @@ fcp_qtc_main ()
 	fcp_mak -j `f_go_bproc` || exit 1
 	fcp_ins || exit 1
 	f_go_tar
-	cp -v "sd-qt" $"D_QT""/bin/"
+	cp -v "sd-qt" "$D_QT""/bin/"
 	fcp_del all
 	;;
 
@@ -1699,7 +1699,7 @@ fcp_xgcc_main ()
  CC="$CBB"/gcc CXX="$CBB"/g++
  export D_QT CC CXX
  ./go.xam.none "$@" || exit 1
- ./go.xrv.none "$@" || exit 1
+# ./go.xrv.none "$@" || exit 1	#16.2.0 internal error
  ) || exit 1
 }
 
