@@ -1,0 +1,18 @@
+#!/bin/bash
+
+NAM=`basename "$0"`
+
+DCC=`echo "$NAM" | awk -F'-' '{print $1}'`
+EXE=`echo "$NAM" | awk -F'-' '{print $2}'`
+DCC=`which "$DCC"`
+
+[ -x "$DCC" ] || {
+	DCC=
+}
+
+[ -z "$DISTCC_HOSTS" ] && {
+	DCC=
+}
+
+$DCC "$EXE" "$@"
+
