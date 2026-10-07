@@ -37,7 +37,7 @@ RETV=
 : ${QC_VER:="17.0"}
 
 : ${GC_PKG:="gcc"}
-: ${GC_VER:="15.2.0"}
+: ${GC_VER:="16.2.0"}
 
 : ${JS_PKG:="node"}
 : ${JS_VER:="v22.17.0"}
